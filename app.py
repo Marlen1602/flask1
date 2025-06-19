@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import joblib
 
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Cargar modelo entrenado
 modelo = joblib.load('modelo.pkl')
@@ -20,5 +20,5 @@ def formulario():
     return render_template('formulario.html', resultado=resultado)
 
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     app.run(debug=True)
