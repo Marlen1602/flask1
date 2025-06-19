@@ -1,42 +1,24 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
-import pandas as pd
-import logging
 
-# Crear la aplicación Flask
-app = Flask(__name__)
 
-# Configurar el registro
-logging.basicConfig(level=logging.DEBUG)
+app = Flask(_name_)
 
-# Cargar el modelo entrenado
-model = joblib.load('modelo.pkl')
-app.logger.debug('Modelo cargado correctamente.')
+# Cargar modelo entrenado
+modelo = joblib.load('modelo.pkl')
 
-@app.route('/')
-def home():
-    return render_template('formulario.html')
+@app.route('/', methods=['GET', 'POST'])
+def formulario():
+    resultado = None
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    try:
-        # Obtener los datos enviados en el request
+    if request.method == 'POST':
         abdomen = float(request.form['abdomen'])
         antena = float(request.form['antena'])
+        prediccion = modelo.predict([[abdomen, antena]])
+        resultado = prediccion[0]
 
-        # Crear un DataFrame con los datos
-        data_df = pd.DataFrame([[abdomen, antena]], columns=['abdomen', 'antena'])
-        app.logger.debug(f'DataFrame creado: {data_df}')
+    return render_template('formulario.html', resultado=resultado)
 
-        # Realizar predicciones
-        prediction = model.predict(data_df)
-        app.logger.debug(f'Predicción: {prediction[0]}')
 
-        # Devolver las predicciones como respuesta JSON
-        return jsonify({'categoria': prediction[0]})
-    except Exception as e:
-        app.logger.error(f'Error en la predicción: {str(e)}')
-        return jsonify({'error': str(e)}), 400
-
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
